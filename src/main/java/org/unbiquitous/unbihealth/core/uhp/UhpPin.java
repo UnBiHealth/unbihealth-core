@@ -1,7 +1,8 @@
 package org.unbiquitous.unbihealth.core.uhp;
 
-import org.unbiquitous.json.JSONException;
-import org.unbiquitous.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Describes an application control pin. A pin is a way for applications to
@@ -16,12 +17,33 @@ public class UhpPin {
 		IN, OUT, INOUT
 	}
 
+	public static final String JSON_NAME_KEY = "name";
+	public static final String JSON_MODE_KEY = "mode";
+	public static final String JSON_TYPE_KEY = "type";
+	public static final String JSON_MNEMONIC_KEY = "mnemonic";
+	public static final String JSON_DESCRIPTION_KEY = "description";
+
+	@JsonProperty(value = JSON_NAME_KEY)
+	@JsonInclude(value = Include.ALWAYS)
 	private String name;
+
+	@JsonProperty(value = JSON_MODE_KEY)
+	@JsonInclude(value = Include.ALWAYS)
 	private IOMode mode;
+
+	@JsonProperty(value = JSON_TYPE_KEY)
+	@JsonInclude(value = Include.ALWAYS)
 	private UhpType type;
+
+	@JsonProperty(value = JSON_MNEMONIC_KEY)
+	@JsonInclude(value = Include.NON_EMPTY)
 	private String mnemonic;
+
+	@JsonProperty(value = JSON_DESCRIPTION_KEY)
+	@JsonInclude(value = Include.NON_EMPTY)
 	private String description;
 
+	
 	public String getName() {
 		return name;
 	}
@@ -60,37 +82,5 @@ public class UhpPin {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public static final String JSON_NAME_KEY = "name";
-	public static final String JSON_MODE_KEY = "mode";
-	public static final String JSON_TYPE_KEY = "type";
-	public static final String JSON_MNEMONIC_KEY = "mnemonic";
-	public static final String JSON_DESCRIPTION_KEY = "description";
-
-	public JSONObject toJSON() throws JSONException {
-		JSONObject json = new JSONObject();
-
-		json.put(JSON_NAME_KEY, getName());
-		json.put(JSON_MODE_KEY, getMode().name());
-		json.put(JSON_TYPE_KEY, getType().toJSON());
-		if (getMnemonic() != null)
-			json.put(JSON_MNEMONIC_KEY, getMnemonic());
-		if (getDescription() != null)
-			json.put(JSON_DESCRIPTION_KEY, getDescription());
-
-		return json;
-	}
-
-	public static UhpPin fromJSON(JSONObject json) throws JSONException {
-		UhpPin pin = new UhpPin();
-
-		pin.setName(json.getString(JSON_NAME_KEY));
-		pin.setMode(IOMode.valueOf(json.getString(JSON_MODE_KEY)));
-		pin.setType(UhpType.fromJSON(json.getJSONObject(JSON_TYPE_KEY)));
-		pin.setMnemonic(json.optString(JSON_MNEMONIC_KEY, null));
-		pin.setDescription(json.optString(JSON_DESCRIPTION_KEY, null));
-
-		return pin;
 	}
 }

@@ -3,8 +3,9 @@ package org.unbiquitous.unbihealth.core.uhp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.unbiquitous.json.JSONException;
-import org.unbiquitous.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Describes the type of a communication pin.
@@ -31,10 +32,20 @@ public class UhpType {
 		DISCRETE, CONTINUOUS, ARRAY, STRUCTURED
 	}
 
+	public static final String JSON_BASE_TYPE_KEY = "baseType";
+	public static final String JSON_DISCRETE_RANGE_START_KEY = "discreteRangeStart";
+	public static final String JSON_DISCRETE_RANGE_SIZE_KEY = "discreteRangeSize";
+	public static final String JSON_CONTINUOUS_RANGE_START_KEY = "continuousRangeStart";
+	public static final String JSON_CONTINUOUS_RANGE_SIZE_KEY = "continuousRangeSize";
+	public static final String JSON_ARRAY_DIMENSION_KEY = "dimension";
+	public static final String JSON_ARRAY_ELEMENT_TYPE_KEY = "elementType";
+	public static final String JSON_STRUCT_FIELDS_KEY = "fields";
+
 	public static UhpType bit;
 	public static UhpType uniform;
 	public static UhpType v2;
 	public static UhpType v3;
+
 	{
 		bit = new UhpType(BaseType.DISCRETE);
 		bit.setRange(0, 1);
@@ -48,14 +59,40 @@ public class UhpType {
 		v3.setDimension(3);
 	}
 
+	@JsonProperty(value = JSON_BASE_TYPE_KEY)
+	@JsonInclude(value = Include.ALWAYS)
 	private BaseType baseType;
+
+	@JsonProperty(value = JSON_ARRAY_DIMENSION_KEY)
+	@JsonInclude(value = Include.ALWAYS)
 	private int dimension;
+
+	@JsonProperty(value = JSON_ARRAY_ELEMENT_TYPE_KEY)
+	@JsonInclude(value = Include.NON_NULL)
 	private UhpType elementType;
+
+	@JsonProperty(value = JSON_STRUCT_FIELDS_KEY)
+	@JsonInclude(value = Include.NON_EMPTY)
 	private Map<String, UhpType> fields;
+
+	@JsonProperty(value = JSON_DISCRETE_RANGE_START_KEY)
+	@JsonInclude(value = Include.NON_NULL)
 	private Integer discRangeStart;
+
+	@JsonProperty(value = JSON_DISCRETE_RANGE_SIZE_KEY)
+	@JsonInclude(value = Include.NON_NULL)
 	private Integer discRangeSize;
+
+	@JsonProperty(value = JSON_CONTINUOUS_RANGE_START_KEY)
+	@JsonInclude(value = Include.NON_NULL)
 	private Double contRangeStart;
+
+	@JsonProperty(value = JSON_CONTINUOUS_RANGE_SIZE_KEY)
+	@JsonInclude(value = Include.NON_NULL)
 	private Double contRangeSize;
+
+	public UhpType() {
+	}
 
 	public UhpType(BaseType base) {
 		setBaseType(base);
@@ -123,77 +160,5 @@ public class UhpType {
 		if (fields == null)
 			fields = new HashMap<String, UhpType>();
 		fields.put(name, type);
-	}
-
-	public static final String JSON_BASE_TYPE_KEY = "baseType";
-	public static final String JSON_DISCRETE_RANGE_START_KEY = "discreteRangeStart";
-	public static final String JSON_DISCRETE_RANGE_SIZE_KEY = "discreteRangeSize";
-	public static final String JSON_CONTINUOUS_RANGE_START_KEY = "continuousRangeStart";
-	public static final String JSON_CONTINUOUS_RANGE_SIZE_KEY = "continuousRangeSize";
-	public static final String JSON_ARRAY_DIMENSION_KEY = "dimension";
-	public static final String JSON_ARRAY_ELEMENT_TYPE_KEY = "elementType";
-	public static final String JSON_STRUCT_FIELDS_KEY = "fields";
-
-	public JSONObject toJSON() throws JSONException {
-		JSONObject json = new JSONObject();
-
-		json.put(JSON_BASE_TYPE_KEY, getBaseType().name());
-
-		switch (getBaseType()) {
-		case DISCRETE:
-			if (getDiscreteRangeStart() != null) {
-				json.put(JSON_DISCRETE_RANGE_START_KEY, getDiscreteRangeStart());
-				json.put(JSON_DISCRETE_RANGE_SIZE_KEY, getContinuousRangeSize());
-			}
-			break;
-
-		case CONTINUOUS:
-			if (getContinuousRangeStart() != null) {
-				json.put(JSON_CONTINUOUS_RANGE_START_KEY, getContinuousRangeStart());
-				json.put(JSON_CONTINUOUS_RANGE_SIZE_KEY, getContinuousRangeSize());
-			}
-			break;
-
-		case ARRAY:
-			json.put(JSON_ARRAY_DIMENSION_KEY, getDimension());
-			json.put(JSON_ARRAY_ELEMENT_TYPE_KEY, getElementType().toJSON());
-			break;
-
-		case STRUCTURED:
-			json.put(JSON_STRUCT_FIELDS_KEY, getFields());
-			break;
-		}
-
-		return json;
-	}
-
-	public static UhpType fromJSON(JSONObject json) throws JSONException {
-		UhpType t = new UhpType(BaseType.valueOf(json.getString(JSON_BASE_TYPE_KEY)));
-
-		switch (t.getBaseType()) {
-		case DISCRETE:
-			if (json.has(JSON_DISCRETE_RANGE_START_KEY))
-				t.setRange(json.getInt(JSON_DISCRETE_RANGE_START_KEY), json.getInt(JSON_DISCRETE_RANGE_SIZE_KEY));
-			break;
-
-		case CONTINUOUS:
-			if (json.has(JSON_CONTINUOUS_RANGE_START_KEY))
-				t.setRange(json.getDouble(JSON_CONTINUOUS_RANGE_START_KEY),
-						json.getDouble(JSON_CONTINUOUS_RANGE_SIZE_KEY));
-			break;
-
-		case ARRAY:
-			t.setDimension(json.getInt(JSON_ARRAY_DIMENSION_KEY));
-			t.setElementType(fromJSON(json.getJSONObject(JSON_ARRAY_ELEMENT_TYPE_KEY)));
-			break;
-
-		case STRUCTURED:
-			JSONObject fields = json.getJSONObject(JSON_STRUCT_FIELDS_KEY);
-			for (String key : fields.toMap().keySet())
-				t.addField(key, fromJSON(fields.getJSONObject(key)));
-			break;
-		}
-
-		return t;
 	}
 }
