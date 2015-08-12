@@ -1,8 +1,14 @@
 package org.unbiquitous.unbihealth.core.uhp;
 
+import static org.unbiquitous.uos.core.ClassLoaderUtils.chainHashCode;
+import static org.unbiquitous.uos.core.ClassLoaderUtils.compare;
+
+import java.io.IOException;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Describes an application control pin. A pin is a way for applications to
@@ -22,6 +28,9 @@ public class UhpPin {
 	public static final String JSON_TYPE_KEY = "type";
 	public static final String JSON_MNEMONIC_KEY = "mnemonic";
 	public static final String JSON_DESCRIPTION_KEY = "description";
+	
+	private static final ObjectMapper mapper = new ObjectMapper();
+	
 
 	@JsonProperty(value = JSON_NAME_KEY)
 	@JsonInclude(value = Include.ALWAYS)
@@ -43,7 +52,13 @@ public class UhpPin {
 	@JsonInclude(value = Include.NON_EMPTY)
 	private String description;
 
-	
+	public UhpPin() {
+	}
+
+	public UhpPin(String name) {
+		setName(name);
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -82,5 +97,46 @@ public class UhpPin {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (!(obj instanceof UhpPin))
+			return false;
+		UhpPin other = (UhpPin) obj;
+
+		if (!compare(this.name, other.name))
+			return false;
+		if (!compare(this.mode, other.mode))
+			return false;
+		if (!compare(this.type, other.type))
+			return false;
+		if (!compare(this.mnemonic, other.mnemonic))
+			return false;
+		if (!compare(this.description, other.description))
+			return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = chainHashCode(0, this.name);
+		hash = chainHashCode(hash, this.mode);
+		hash = chainHashCode(hash, this.type);
+		hash = chainHashCode(hash, this.mnemonic);
+		hash = chainHashCode(hash, this.description);
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

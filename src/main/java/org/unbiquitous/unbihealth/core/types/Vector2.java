@@ -1,4 +1,4 @@
-package org.unbiquitous.unbihealth.core.data;
+package org.unbiquitous.unbihealth.core.types;
 
 /**
  * Holds 3 dimensional vectorial data.
