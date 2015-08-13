@@ -1,6 +1,10 @@
 package org.unbiquitous.unbihealth.core.uhp;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,65 +73,65 @@ public class UhpTypeTest {
 	@SuppressWarnings("serial")
 	@Test
 	public void testIsValid() throws IOException {
-		assertThat(new UhpType().isValid()).isFalse();
+		assertFalse(new UhpType().isValid());
 
-		assertThat(UhpType.bit.isValid()).isTrue();
-		assertThat(UhpType.uniform.isValid()).isTrue();
-		assertThat(UhpType.v2.isValid()).isTrue();
-		assertThat(UhpType.v3.isValid()).isTrue();
+		assertTrue(UhpType.bit.isValid());
+		assertTrue(UhpType.uniform.isValid());
+		assertTrue(UhpType.v2.isValid());
+		assertTrue(UhpType.v3.isValid());
 
-		assertThat(UhpType.discrete(0, -1).isValid()).isFalse();
-		assertThat(UhpType.discrete(0, 0).isValid()).isFalse();
-		assertThat(UhpType.discrete(0, 1).isValid()).isTrue();
+		assertFalse(UhpType.discrete(0, -1).isValid());
+		assertFalse(UhpType.discrete(0, 0).isValid());
+		assertTrue(UhpType.discrete(0, 1).isValid());
 
-		assertThat(UhpType.continuous(0, -1).isValid()).isFalse();
-		assertThat(UhpType.continuous(0, 0).isValid()).isFalse();
-		assertThat(UhpType.continuous(0, 1).isValid()).isTrue();
+		assertFalse(UhpType.continuous(0, -1).isValid());
+		assertFalse(UhpType.continuous(0, 0).isValid());
+		assertTrue(UhpType.continuous(0, 1).isValid());
 
-		assertThat(UhpType.array(null, -1).isValid()).isFalse();
-		assertThat(UhpType.array(null, 0).isValid()).isFalse();
-		assertThat(UhpType.array(null, 1).isValid()).isFalse();
+		assertFalse(UhpType.array(null, -1).isValid());
+		assertFalse(UhpType.array(null, 0).isValid());
+		assertFalse(UhpType.array(null, 1).isValid());
 
-		assertThat(UhpType.array(UhpType.discrete(0, 1), -1).isValid()).isFalse();
-		assertThat(UhpType.array(UhpType.discrete(0, 1), 0).isValid()).isFalse();
-		assertThat(UhpType.array(UhpType.discrete(0, 1), 1).isValid()).isTrue();
+		assertFalse(UhpType.array(UhpType.discrete(0, 1), -1).isValid());
+		assertFalse(UhpType.array(UhpType.discrete(0, 1), 0).isValid());
+		assertTrue(UhpType.array(UhpType.discrete(0, 1), 1).isValid());
 
-		assertThat(UhpType.array(UhpType.discrete(0, -1), -1).isValid()).isFalse();
-		assertThat(UhpType.array(UhpType.discrete(0, -1), 0).isValid()).isFalse();
-		assertThat(UhpType.array(UhpType.discrete(0, -1), 1).isValid()).isFalse();
+		assertFalse(UhpType.array(UhpType.discrete(0, -1), -1).isValid());
+		assertFalse(UhpType.array(UhpType.discrete(0, -1), 0).isValid());
+		assertFalse(UhpType.array(UhpType.discrete(0, -1), 1).isValid());
 
-		assertThat(UhpType.struct(null).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>()).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>() {
+		assertFalse(UhpType.struct(null).isValid());
+		assertFalse(UhpType.struct(new HashMap<String, UhpType>()).isValid());
+		assertFalse(UhpType.struct(new HashMap<String, UhpType>() {
 			{
 				put(null, null);
 			}
-		}).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>() {
+		}).isValid());
+		assertFalse(UhpType.struct(new HashMap<String, UhpType>() {
 			{
 				put("", null);
 			}
-		}).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>() {
+		}).isValid());
+		assertFalse(UhpType.struct(new HashMap<String, UhpType>() {
 			{
 				put("field", null);
 			}
-		}).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>() {
+		}).isValid());
+		assertFalse(UhpType.struct(new HashMap<String, UhpType>() {
 			{
 				put("field", UhpType.discrete(0, -1));
 			}
-		}).isValid()).isFalse();
-		assertThat(UhpType.struct(new HashMap<String, UhpType>() {
+		}).isValid());
+		assertTrue(UhpType.struct(new HashMap<String, UhpType>() {
 			{
 				put("field", UhpType.discrete(0, 1));
 			}
-		}).isValid()).isTrue();
+		}).isValid());
 	}
 
 	@SuppressWarnings({ "rawtypes", "serial" })
 	@Test
-	public void testExtract() {
+	public void testExtractValid() {
 		UhpType type = dummyExtractType();
 
 		Map<String, Object> src = new HashMap<String, Object>();
@@ -138,7 +142,7 @@ public class UhpTypeTest {
 		Map extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		Object[] extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 
 		src.put("array", new ArrayList<Integer>() {
@@ -155,7 +159,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -171,7 +175,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -181,7 +185,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -191,7 +195,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
 
@@ -201,7 +205,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
 
@@ -213,7 +217,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -223,7 +227,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -233,7 +237,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
 
@@ -243,7 +247,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
 
@@ -253,7 +257,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -263,7 +267,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0.5);
 
@@ -273,7 +277,7 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
 
@@ -283,9 +287,113 @@ public class UhpTypeTest {
 		extractedMap = (Map) extracted;
 		assertThat(extractedMap.get("array")).isInstanceOf(Object[].class);
 		extractedArray = (Object[]) extractedMap.get("array");
-		assertThat(extractedArray).isEqualTo(new Object[] { 0l, 1l, 0l, 1l, 0l });
+		assertArrayEquals(new Object[] { 0l, 1l, 0l, 1l, 0l }, extractedArray);
 		assertThat(extractedMap.get("uniform")).isInstanceOf(Double.class);
 		assertThat((Double) extractedMap.get("uniform")).isEqualTo(0);
+	}
+
+	@Test
+	public void testExtractInvalid() {
+		try {
+			new UhpType().extractValue(null);
+			fail("should not extract with no base type");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("base type");
+		}
+
+		try {
+			UhpType type = new UhpType(BaseType.DISCRETE);
+			type.setDiscRangeStart(0l);
+			type.setDiscRangeSize(0l);
+			type.extractValue(new Integer(0));
+			fail("should not extract with invalid discrete range size");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("range size");
+		}
+
+		try {
+			UhpType type = new UhpType(BaseType.CONTINUOUS);
+			type.setContRangeStart(0.0);
+			type.setContRangeSize(0.0);
+			type.extractValue(new Double(0));
+			fail("should not extract with invalid continuous range size");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("range size");
+		}
+
+		try {
+			UhpType type = new UhpType(BaseType.ARRAY);
+			type.setDimension(2);
+			type.extractValue(new Object[2]);
+			fail("should not extract with no array element type");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("element type");
+		}
+
+		try {
+			UhpType type = new UhpType(BaseType.ARRAY);
+			type.setElementType(UhpType.bit);
+			type.extractValue(new Object[0]);
+			fail("should not extract with no array dimension");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("dimension");
+		}
+		
+		try {
+			UhpType type = new UhpType(BaseType.ARRAY);
+			type.setElementType(UhpType.bit);
+			type.setDimension(0);
+			type.extractValue(new Object[0]);
+			fail("should not extract with invalid array dimension");
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage()).contains("dimension");
+		}
+		
+
+		UhpType type = dummyExtractType();
+
+		try {
+			type.extractValue(null);
+			fail("should not extract a null object");
+		} catch (NullPointerException e) {
+			assertThat(e.getMessage()).contains("source");
+		}
+
+		Map<String, Object> src = new HashMap<String, Object>();
+		try {
+			type.extractValue(src);
+			fail("should not extract an empty map");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage()).contains("not found");
+		}
+
+		src.put("array", new Float[] { 0f, 1f, 0f, 1f, 0f });
+		src.put("uniform", 0.5f);
+		try {
+			type.extractValue(src);
+			fail("should not extract a wrong typed array");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage()).contains("field");
+			assertThat(e.getCause().getMessage()).contains("array element at");
+			assertThat(((RuntimeException) e.getCause()).getCause().getMessage()).contains("integral");
+		}
+		src.put("array", new Integer[] { 0, 1, 0, 1, 0 });
+		src.put("uniform", -1.00001);
+		try {
+			type.extractValue(src);
+			fail("should complain about range");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage()).contains("field");
+			assertThat(e.getCause().getMessage()).contains("range");
+		}
+		src.put("uniform", 2);
+		try {
+			type.extractValue(src);
+			fail("should complain about range");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage()).contains("field");
+			assertThat(e.getCause().getMessage()).contains("range");
+		}
 	}
 
 	@Test

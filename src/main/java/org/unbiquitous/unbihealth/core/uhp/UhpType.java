@@ -348,23 +348,25 @@ public class UhpType {
 	}
 
 	private Long validateLong(long value) {
-		if ((discRangeSize != null) && (discRangeSize.longValue() <= 0))
-			throw new IllegalStateException("range size is invalid");
-		if (discRangeStart != null)
+		if (discRangeStart != null) {
+			if ((discRangeSize != null) && (discRangeSize.longValue() <= 0))
+				throw new IllegalStateException("range size is invalid");
 			if ((value < discRangeStart.longValue())
 							|| ((discRangeSize != null)
 											&& (value >= discRangeStart.longValue() + discRangeSize.longValue())))
 				throw new IllegalArgumentException("value outside of defined range");
+		}
 		return value;
 	}
 
 	private Double validateDouble(double value) {
-		if ((contRangeSize != null) && (contRangeSize.doubleValue() <= 0))
-			throw new IllegalStateException("range size is invalid");
-		if (contRangeStart != null)
+		if (contRangeStart != null) {
+			if ((contRangeSize != null) && (contRangeSize.doubleValue() <= 0))
+				throw new IllegalStateException("range size is invalid");
 			if ((value < contRangeStart.doubleValue()) || ((contRangeSize != null)
 							&& (value >= contRangeStart.doubleValue() + contRangeSize.doubleValue())))
 				throw new IllegalArgumentException("value outside of defined range");
+		}
 		return value;
 	}
 
