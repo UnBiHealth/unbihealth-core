@@ -14,6 +14,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.unbiquitous.unbihealth.core.uhp.UhpType.BaseType;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -338,7 +339,7 @@ public class UhpTypeTest {
 		} catch (IllegalStateException e) {
 			assertThat(e.getMessage()).contains("dimension");
 		}
-		
+
 		try {
 			UhpType type = new UhpType(BaseType.ARRAY);
 			type.setElementType(UhpType.bit);
@@ -348,7 +349,6 @@ public class UhpTypeTest {
 		} catch (IllegalStateException e) {
 			assertThat(e.getMessage()).contains("dimension");
 		}
-		
 
 		UhpType type = dummyExtractType();
 
@@ -400,18 +400,18 @@ public class UhpTypeTest {
 	public void testToJsonEmpty() {
 		ObjectNode node = mapper.createObjectNode();
 		node.put(UhpType.JSON_BASE_TYPE_KEY, (String) null);
-		assertThat(mapper.valueToTree(new UhpType())).isEqualTo(node);
+		assertThat((JsonNode) mapper.valueToTree(new UhpType())).isEqualTo(node);
 	}
 
 	@Test
 	public void testToJson() {
-		assertThat(mapper.valueToTree(dummyUhpType())).isEqualTo(dummyUhpTypeJson());
+		assertThat((JsonNode) mapper.valueToTree(dummyUhpType())).isEqualTo(dummyUhpTypeJson());
 
 		UhpType type = dummyUhpType();
 		ObjectNode json = dummyUhpTypeJson();
 		type.setBaseType(BaseType.CONTINUOUS);
 		json.put(UhpType.JSON_BASE_TYPE_KEY, BaseType.CONTINUOUS.name());
-		assertThat(mapper.valueToTree(type)).isEqualTo(json);
+		assertThat((JsonNode) mapper.valueToTree(type)).isEqualTo(json);
 
 		UhpType arrayType = new UhpType(BaseType.ARRAY);
 		arrayType.setElementType(type);
@@ -420,7 +420,7 @@ public class UhpTypeTest {
 		arrayJson.put(UhpType.JSON_BASE_TYPE_KEY, BaseType.ARRAY.name());
 		arrayJson.set(UhpType.JSON_ARRAY_ELEMENT_TYPE_KEY, json);
 		arrayJson.put(UhpType.JSON_ARRAY_DIMENSION_KEY, 5);
-		assertThat(mapper.valueToTree(arrayType)).isEqualTo(arrayJson);
+		assertThat((JsonNode) mapper.valueToTree(arrayType)).isEqualTo(arrayJson);
 
 		UhpType structType = new UhpType(BaseType.STRUCTURED);
 		structType.addField("array", arrayType);
@@ -433,7 +433,7 @@ public class UhpTypeTest {
 		bitJson.put(UhpType.JSON_BASE_TYPE_KEY, BaseType.DISCRETE.name());
 		bitJson.put(UhpType.JSON_DISCRETE_RANGE_START_KEY, 0l);
 		bitJson.put(UhpType.JSON_DISCRETE_RANGE_SIZE_KEY, 2l);
-		assertThat(mapper.valueToTree(structType)).isEqualTo(structJson);
+		assertThat((JsonNode) mapper.valueToTree(structType)).isEqualTo(structJson);
 	}
 
 	private UhpType dummyUhpType() {
