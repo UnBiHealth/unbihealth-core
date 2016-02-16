@@ -64,7 +64,7 @@ public class UhpType {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	@JsonProperty(value = JSON_BASE_TYPE_KEY)
+	@JsonProperty(value = JSON_BASE_TYPE_KEY, required = true)
 	@JsonInclude(value = Include.ALWAYS)
 	private BaseType baseType;
 
@@ -244,7 +244,7 @@ public class UhpType {
 				return false;
 			for (Map.Entry<String, UhpType> entry : fields.entrySet()) {
 				if ((entry.getKey() == null) || entry.getKey().isEmpty() || (entry.getValue() == null)
-								|| (!entry.getValue().isValid()))
+						|| (!entry.getValue().isValid()))
 					return false;
 			}
 			break;
@@ -352,8 +352,7 @@ public class UhpType {
 			if ((discRangeSize != null) && (discRangeSize.longValue() <= 0))
 				throw new IllegalStateException("range size is invalid");
 			if ((value < discRangeStart.longValue())
-							|| ((discRangeSize != null)
-											&& (value >= discRangeStart.longValue() + discRangeSize.longValue())))
+					|| ((discRangeSize != null) && (value >= discRangeStart.longValue() + discRangeSize.longValue())))
 				throw new IllegalArgumentException("value outside of defined range");
 		}
 		return value;
@@ -364,7 +363,7 @@ public class UhpType {
 			if ((contRangeSize != null) && (contRangeSize.doubleValue() <= 0))
 				throw new IllegalStateException("range size is invalid");
 			if ((value < contRangeStart.doubleValue()) || ((contRangeSize != null)
-							&& (value >= contRangeStart.doubleValue() + contRangeSize.doubleValue())))
+					&& (value >= contRangeStart.doubleValue() + contRangeSize.doubleValue())))
 				throw new IllegalArgumentException("value outside of defined range");
 		}
 		return value;
