@@ -1,7 +1,7 @@
 package org.unbiquitous.unbihealth.core.uhp;
 
 /**
- * Created by Luciano on 27/03/2016.
+ * Adapts data from a source type to a target type.
  */
 public interface UhpAdapter {
 }

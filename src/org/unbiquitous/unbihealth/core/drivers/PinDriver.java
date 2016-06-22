@@ -162,7 +162,7 @@ public class PinDriver implements UosEventDriver, UosEventListener {
 	 * Handles an external pin change event.
 	 * 
 	 * @param pinName
-	 * @param device
+	 * @param newValue
 	 */
 	public synchronized void pinValueChanged(String pinName, Object newValue) {
 		if (pinDao.find(pinName) == null)

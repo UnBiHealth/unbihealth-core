@@ -10,45 +10,25 @@ import java.util.Map;
  * @author Luciano Santos
  */
 public class UhpAdaptation {
-    public static final String JSON_NAME_KEY = "name";
-    public static final String JSON_SOURCE_TYPE_KEY = "sourceType";
-    public static final String JSON_TARGET_TYPE_KEY = "targetType";
+    public static final String JSON_ADAPTER_KEY = "adapter";
     public static final String JSON_PARAMS_KEY = "params";
+    public static final String JSON_MNEMONIC_KEY = "mnemonic";
 
-    @JsonProperty(value = JSON_NAME_KEY)
-    private String name;
-
-    @JsonProperty(value = JSON_SOURCE_TYPE_KEY)
-    private UhpType sourceType;
-
-    @JsonProperty(value = JSON_TARGET_TYPE_KEY)
-    private UhpType targetType;
+    @JsonProperty(value = JSON_ADAPTER_KEY)
+    private String adapter;
 
     @JsonProperty(value = JSON_PARAMS_KEY)
     private Map<String, Object> params;
 
-    public String getName() {
-        return name;
+    @JsonProperty(value = JSON_MNEMONIC_KEY)
+    private String mnemonic;
+
+    public String getAdapter() {
+        return adapter;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UhpType getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(UhpType sourceType) {
-        this.sourceType = sourceType;
-    }
-
-    public UhpType getTargetType() {
-        return targetType;
-    }
-
-    public void setTargetType(UhpType targetType) {
-        this.targetType = targetType;
+    public void setAdapter(String adapter) {
+        this.adapter = adapter;
     }
 
     public Map<String, Object> getParams() {
@@ -57,5 +37,13 @@ public class UhpAdaptation {
 
     public void setParams(Map<String, Object> params) {
         this.params = params;
+    }
+
+    public String getMnemonic() {
+        return mnemonic;
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
     }
 }
