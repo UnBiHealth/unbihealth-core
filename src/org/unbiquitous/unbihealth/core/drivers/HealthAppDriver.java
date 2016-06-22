@@ -7,7 +7,7 @@ import org.unbiquitous.uos.core.adaptabitilyEngine.Gateway;
 import org.unbiquitous.uos.core.driverManager.UosDriver;
 import org.unbiquitous.uos.core.messageEngine.dataType.UpDriver;
 
-public class HealthDataDriver implements UosDriver {
+public class HealthAppDriver implements UosDriver {
 
 	public UpDriver getDriver() {
 		return null;
